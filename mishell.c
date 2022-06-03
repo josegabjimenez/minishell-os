@@ -8,6 +8,8 @@ int main(int argc, char* argv[]) {
     	char command[256];
     	char **comando;
         int largoMatriz;
+        int procesos[] = {};
+        int largoProcesos = 1;
 
     	while (1) {
             	printf("> ");
@@ -19,47 +21,54 @@ int main(int argc, char* argv[]) {
                         largoMatriz = i;
                         break;
                     }
-                    printf("%s\n", comando[i]);
+                    // printf("%s\n", comando[i]);
                 }
-   
-                printf("Largo de caracteres: %d\n", largo);
-                // printf("Largo del vector%d\n", (int)(sizeof(comando) / sizeof(comando[0])));
-                printf("Largo de matriz: %d\n", largoMatriz);
-                printf("Última palabra de matriz: %s\n", comando[largoMatriz-1]);
-                // printf("String: %s\n", comando[0]);
-                // printf("%ld\n", sizeof(&command));
-            	if (strcmp(command,"salir") == 0) break;
+
+                // printf("Largo de caracteres: %d\n", largo);
+                // printf("Largo de matriz: %d\n", largoMatriz);
+                // printf("Última palabra de matriz: %s\n", comando[largoMatriz-1]);
+
+                if(strcmp(comando[largoMatriz -1], "&") == 0) {
+                    procesos[largoProcesos] = 20;
+                    largoProcesos++;
+                }
+
+            	if (strcmp(command,"tareas") == 0){
+                    for(int i = 0; i < largoProcesos; i++){
+                        printf("%d\n", procesos[i]);
+                    }
+                }
+
+                if (strcmp(command,"largo") == 0){
+                    printf("%d\n", largoProcesos);
+                }
+
+                if (strcmp(command,"salir") == 0) break;
             	int rc = fork();
                 assert(rc >= 0);
             	if (rc == 0){
                     if(command[largo - 1] == 38){
+                        procesos[largoProcesos] = 10;
                         int largoPalabra = strlen(comando[largoMatriz - 1]);
                         if(largoPalabra == 1){
                             comando[largoMatriz -1] = '\0';
                         } else {
+                            
                             comando[largoMatriz -1][largoPalabra - 1] = '\0';
                         }
                         
-                        // printf("%s\n", comando[largoMatriz - 1]);
-                        // printf("El ampersand");
-                        // command[largo] = '\x0';
-                        // printf("%d\n", command[largo - 1]);
-                        // comando = de_cadena_a_vector(command);
-                        // puts(command);
+                        // printf("%d\n", getpid()); 
                         execvp(comando[0], comando);
                     } else {
                         execvp(comando[0], comando);
                     }
                 }
             	else {
-                    if(command[largo - 1] == 38) {
-                        // comando[strlen(comando) - 1] = NULL;
-                        // execvp(comando[0], comando);
-                    }
-                    else {
+                    if(command[largo - 1] != 38) {
                         wait(NULL);
                     }
                 }
+
     	}
     	return 0;
 }
